@@ -1,91 +1,119 @@
 # WebGPT
 
-WebGPT является библиотекой, основанной на OpenAI API и LangChain. Она позволяет без шва подключать ChatGPT к интернету для выполнения запросов и получения актуальной информации.
+WebGPT is a library based on the Openal API and Long Chain. It allows you to connect ChatGPT to the Internet without a seam to make requests and receive responses with up-to-date information.
 
-## Основной класс - `WebGPT`
+If the user's response requires information from the Internet, it will launch Long Chain methods, otherwise WebGPT will give a normal response from ChatGPT
 
-```python
-from web_gpt import WebGPT
-```
+You can also throw off the link (you can do it together with the signature of what to do) and it will work on this link.
 
-### Описание
+A repository is attached to the response, which can be inserted into the parameters and continue the dialogue on this site
 
-Класс основанный на OpenAi API и LangChain, без шовно подключающий ChatGPT к интернету.
-
-#### Параметры
-
-* `model`: модель чата
-* `vector_store_model`: модель, которая будет производить поиск по сайту, рекомендуется "gpt-3.5-turbo-16k"
-* `prompt`: инструкция для нейросети о том, как работать с документом, рекомендуется оставить дефолтный
-* `urls_count`: количество ссылок, с которых нейросеть возьмет информацию, рекомендуется не более 3
-* `search_region`: регион для поиска в интернете, например "ru-ru"
-
-### Методы
-
-#### `ask`
+## Usage
+Simple Usage
 
 ```python
-result = await web_gpt.ask([{"role": "user", "content": "Расскажи последние новости в мире"}])
-```
+import os
+import asyncio
 
-##### Описание
-
-Метод класса основанный для запроса к WebGPT. Если для ответа пользователя потребуется информация из интернета, то запустит методы LangChain, иначе WebGPT выдаст обычный ответ.
-
-##### Тип возвращаемого значения
-
-`Dict`
-
-###### Параметры результата
-
-* Если для ответа не потребовался интернет: `{"type": "def", "content": "Ответ"}`
-* Если для ответа потребовался интернет: `{"type": "web", "content": "Ответ", "vectorstore": "форматированный источник информации"}`
-
-##### Параметры
-
-* `messages`: список сообщений, подробнее https://platform.openai.com/docs/api-reference/chat
-
-
-#### `vector_store_asq`
-
-```python
-vectorstore_result = await web_gpt.vector_store_asq(old_vectorstore=result["vectorstore"], messages=[{"role": "user", "content": "Расскажи подробнее про <что-то>"}])
-```
-
-##### Описание
-
-Метод класса основанный для запроса к уже существующему vectorstore. WebGPT выдаст обычный ответ.
-
-##### Тип возвращаемого значения
-
-`Dict`
-
-###### Параметры результата
-
-* `{"content": "Ответ", "vectorstore": vectorstore}`
-
-##### Параметры
-
-* `old_vectorstore`: форматированный источник информации, который возвращается в методе `ask`
-* `messages`: список сообщений, подробнее https://platform.openai.com/docs/api-reference/chat
-
-## Пример использования
-
-```python
 from web_gpt import WebGPT
 
-web_gpt = WebGPT(
-    model="gpt-3.5-turbo",
-    vector_store_model="gpt-3.5-turbo-16k",
-    prompt="",
-    urls_count=3,
-    search_region="ru-ru"
-)
+os.environ['OPENAI_API_KEY'] = "openai_api_key"
 
-result = await web_gpt.ask([{"role": "user", "content": "Расскажи последние новости в мире"}])
 
-if result["type"] == "web":
-    vectorstore_result = await web_gpt.vector_store_asq(old_vectorstore=result["vectorstore"], messages=[{"role": "user", "content": "Расскажи подробнее про <что-то>"}])
-    print(vectorstore_result["content"])
-else:
+async def exaple():
+    web_gpt = WebGPT()
+    result = await web_gpt.ask([{"role": "user", "content": "Расскажи последние новости в тюмени"}])
     print(result["content"])
+
+asyncio.run(exaple())
+```
+
+Requests to the processed site
+
+```python
+import os
+import asyncio
+
+from web_gpt import WebGPT
+
+os.environ['OPENAI_API_KEY'] = "openai_api_key"
+
+
+async def exaple():
+    web_gpt = WebGPT()
+    result = await web_gpt.ask([{"role": "user", "content": "Tell us the latest news in the world of neural networks"}])
+    print(result["content"])
+    if result["type"] == "web":
+        vectorstore_result = await web_gpt.vector_store_asq(old_vectorstore=result["vectorstore"], messages=[{"role": "user", "content": "Tell me more about <something>"}])
+        print(vectorstore_result["content"])
+
+asyncio.run(exaple())
+```
+
+# Detailed description
+
+## Class WebGPT 
+
+### Params
+
+* `model`: chat model
+* `vector_store_model`: the model that will search the site is recommended "gpt-3.5-turbo-16k"
+* `prompt`: instructions for the neural network on how to work with the document, you must add {context} to the end, it is recommended to leave the default
+* `urls_count`: the number of links from which the neural network will take information, it is recommended no more than 3
+* `search_region`: the region to search on the Internet, for example "ru-ru"
+
+### Methods
+
+### ask
+
+```python
+result = await web_gpt.ask([{"role": "user", "content": "https://openai.com/gpt-4 summarize this article"}])
+```
+
+##### Description
+
+A class method based on a request to Web GT. If the user's response requires information from the Internet, it will launch Long Chain methods, otherwise WebGPT will give a normal response.
+
+##### Return `Dict`
+
+###### Result Parameters
+
+* If the Internet was not required for the response: `{"type": "def", "content": "Response"}`
+* If the response required the Internet: `{"type": "web", "content": "Response", "vectorstore": "formatted information source"}`
+
+##### Parameters
+
+* `messages`: list of messages, more details https://platform.openai.com/docs/api-reference/chat
+
+
+
+
+
+### vector_store_asq
+
+```python
+vectorstore_result = await web_gpt.vector_store_asq(old_vectorstore=result["vectorstore"], messages=[{"role": "user", "content": "Tell me more about <something>"}])
+```
+
+##### Description
+
+A method of the class based on a request to an already existing vectorstore. WebGPT will give a normal response.
+
+##### Return `Dict`
+
+###### Result Parameters
+
+* `{"content": "answer", "vectorstore": vectorstore}`
+
+##### Parameters
+
+* `old_vectorstore`: the formatted source of information that is returned in the method `ask`
+* `messages`: list of messages, more details https://platform.openai.com/docs/api-reference/chat
+
+# Issues
+
+In this version of the project, token counting does not work yet, this will definitely be added in future versions.
+
+# Contacts
+
+- Telegram https://t.me/onazeron
