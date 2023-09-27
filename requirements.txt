@@ -1,0 +1,9 @@
+aiohttp==3.8.5
+langchain==0.0.302
+setuptools==68.2.2
+openai==0.28.1
+chromadb==0.4.13
+duckduckgo_search==3.8.5
+playwright==1.38.0
+tiktoken==0.5.1
+html2text==2020.1.16
