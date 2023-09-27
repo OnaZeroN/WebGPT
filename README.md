@@ -89,4 +89,3 @@ if result["type"] == "web":
     print(vectorstore_result["content"])
 else:
     print(result["content"])
-```d:
