@@ -13,28 +13,27 @@ class WebGPT(OpenAiHelper, LangChainHelper):
             model: str = "gpt-3.5-turbo",
             vector_store_model: str = "gpt-3.5-turbo-16k",
             prompt: str = """
-                Используйте следующие фрагменты контекста, чтобы ответить на вопрос в конце. 
-                Инструкции:
-                 - Внимательно вчитайся в документ и проанализируй его полностью вникнув в его смысл.
-                 - Проведи герменевтический анализ, исследуя в глубину текстовые и контекстуальные слои документа.
-                 - Отвечай на вопрос максимально подробно на вопрос пользователя, настолько насколько позволяет контекст.
-                 - Если вы не знаете ответа, просто скажите, что вы не знаете, не пытайтесь придумать ответ. 
-                 - Приводи фрагменты контекста откуда ты взял информацию.
-                 - Отвечай всегда в виде маркировочного списка.
-                 - Изучи документ, проникнись его сущностью, выяви скрытые смыслы и подтекст. 
-                 - Отвечай только на Русском языке, даже если контекст на английском. 
-                {context}
+            Use the following context snippets to answer the question at the end.
+            Instructions:
+            - Carefully read the document and analyze it fully understanding its meaning.
+            - Conduct a hermeneutic analysis, exploring in depth the textual and contextual layers of the document.
+            - Answer the question in as much detail as possible to the user's question, as much as the context allows.
+            - If you don't know the answer, just say you don't know, don't try to come up with an answer.
+            - Give fragments of the context from where you got the information.
+            - Always answer in the form of a marking list.
+            - Study the document, get into its essence, reveal hidden meanings and subtext.
+            {context}
             """,
             urls_count: int = 1,
             search_region: str = "ru-ru"
     ):
         """
-        Класс основанный на OpenAi API и LangChain, без шовно подключающий ChatGPT к интернету
-        :param model: модель чата
-        :param vector_store_model: модель которая будет производить поиск по сайту, рекомендуется "gpt-3.5-turbo-16k"
-        :param prompt: инструкция для нейросети о том как работать с документом, рекомендуется оставить дефолтный
-        :param urls_count: количество ссылок с которых нейросеть возьмет информацию, рекомендуется не более 3
-        :param search_region: регион для поиска в интернете, например "ru-ru"
+        Class based on Open air API and Langchain, seamlessly connecting ChatGPT to the Internet
+        :param model: chat model
+        :param vector_store_model: the model that will search the site, "gpt-3.5-turbo-16k" is recommended
+        :param prompt: instructions for the neural network on how to work with the document, you must add {context} to the end, it is recommended to leave the default
+        :param urls_count: the number of links from which the neural network will take information, it is recommended no more than 3
+        :param search_region: region for internet search, for example "ru-ru"
         """
         self.urls_count = urls_count
         self.messages = None
@@ -45,16 +44,16 @@ class WebGPT(OpenAiHelper, LangChainHelper):
         LangChainHelper.__init__(self, vector_store_model, search_region)
         self.open_ai_key = self.get_open_ai_key()
 
-    async def ask(self, messages: list):
+    async def ask(self, messages: list) -> dict:
         """
-        Метод Класса основанный для запроса к WebGPT, если для ответа пользователя потребуется информация из интернета, то запустит методы LangChain, иначе
-        WebGPT выдаст обычный ответ
+        A method of the Class based on a request to Web GT, if the user's response requires information from the Internet, it will launch LangChain methods, otherwise
+        WebGPT will give a normal response
 
-        Ответ возвращается в виде dict:
-        Если для ответа не потребовался интернет: {"type": "def", "content": "Ответ"}
-        Если для ответа потребовался интернет: {"type": "web", "content": "Ответ", "vectorstore": "форматированный источник информации"}
+        The response is returned as a dict:
+        If the response did not require the Internet: {"type": "def", "content": "Response"}
+        If the response required the Internet: {"type": "web", "content": "Response", "vectorstore": "formatted information source"}
 
-        :param messages: список сообщений, подробнее https://platform.openai.com/docs/api-reference/chat
+        :param messages: list of messages, more details https://platform.openai.com/docs/api-reference/chat
         """
         self.messages = messages
         chat_completion = await self.chat_completion(messages=self.messages)
@@ -66,16 +65,16 @@ class WebGPT(OpenAiHelper, LangChainHelper):
         except Exception as e:
             raise Exception(e)
 
-    async def vector_store_asq(self, query=None, old_vectorstore=None, messages: list = None):
+    async def vector_store_asq(self, query=None, old_vectorstore=None, messages: list = None) -> dict:
         """
-        Метод Класса основанный для запроса к уже существующему vectorstore
-        WebGPT выдаст обычный ответ
+        A method of the Class based on a request to an already existing vectorstore
+        WebGPT will give a normal response
 
-        Ответ возвращается в виде dict:
-        {"content": "Ответ", "vectorstore": vectorstore}
+        The response is returned as a dict:
+        {"content": "Response", "vectorstore": vectorstore}
 
-        :param old_vectorstore: форматированный источник информации, который возвращается в методе ask
-        :param messages: список сообщений, подробнее https://platform.openai.com/docs/api-reference/chat
+        :param old_vectorstore: formatted information source that is returned in the ask method
+        :param messages: list of messages, more details https://platform.openai.com/docs/api-reference/chat
         """
         template = self.prompt
         if old_vectorstore is None:
