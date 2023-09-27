@@ -9,12 +9,11 @@ def readme():
 setup(
     name='web_gpt',
     version='1.0.0',
-    author='your_nickname',
-    author_email='example@gmail.com',
-    description='This is my first module',
+    author='ZeroN',
+    author_email='dotdot20072607@gmail.com',
+    description='WebGPT is a library based on the Openal API and Long Chain. It allows you to connect ChatGPT to the Internet without a seam to make requests and receive responses with up-to-date information.',
     long_description=readme(),
-    long_description_content_type='text/markdown',
-    url='home_link',
+    url='https://github.com/OnaZeroN/WebGPT',
     packages=find_packages(),
     install_requires=['requests>=2.25.1'],
     classifiers=[
@@ -26,5 +25,5 @@ setup(
     project_urls={
         'Documentation': 'link'
     },
-    python_requires='>=3.7'
+    python_requires='>=3.9'
 )
