@@ -22,7 +22,7 @@ os.environ['OPENAI_API_KEY'] = "openai_api_key"
 
 async def exaple():
     web_gpt = WebGPT()
-    result = await web_gpt.ask([{"role": "user", "content": "Расскажи последние новости в тюмени"}])
+    result = await web_gpt.ask([{"role": "user", "content": "last world news"}])
     print(result["content"])
 
 asyncio.run(exaple())
